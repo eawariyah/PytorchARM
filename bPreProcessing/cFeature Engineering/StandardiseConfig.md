@@ -1,0 +1,1 @@
+$$ z = \frac{(X - \mu)}{\sigma} $$
