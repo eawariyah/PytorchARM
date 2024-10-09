@@ -8,7 +8,7 @@ ser = serial.Serial('COM3', 115200, timeout=1)
 
 
 # Create or open the CSV file
-with open('RainyDay.csv', mode='w', newline='') as file:
+with open('RainyDayNight.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     # Write the header
     writer.writerow(['Timestamp',"Temperature", "Pressure", "Altitude"])
