@@ -7,22 +7,23 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 
 # Load datasets
-RainyDayPath = 'aDataCollection/RainyDayNormal.csv'
-SunnyDayPath = 'aDataCollection/SunnyDay.csv'
+IndoorsPath = 'aDataCollection/Indoors.csv'
+OutdoorsPath = 'aDataCollection/Outdoors.csv'
 
-RainyDayDF = pd.read_csv(RainyDayPath)
-SunnyDayDF = pd.read_csv(SunnyDayPath)
+# Load data
+IndoorsDF = pd.read_csv(IndoorsPath)
+OutdoorsDF = pd.read_csv(OutdoorsPath)
 
-# Add a "Rain" column: 1 for rainy day, 0 for sunny day
-RainyDayDF['Rain'] = 1
-SunnyDayDF['Rain'] = 0
+# Add an "Indoors" column: 1 for indoors, 0 for outdoors
+IndoorsDF['Indoors'] = 1
+OutdoorsDF['Indoors'] = 0
 
 # Concatenate both dataframes
-df = pd.concat([RainyDayDF, SunnyDayDF])
+df = pd.concat([IndoorsDF, OutdoorsDF])
 
 # Feature columns
-X = df[['Temperature', 'Pressure', 'Altitude']].values
-y = df['Rain'].values
+X = df[['Temperature', 'Humidity']].values
+y = df['Indoors'].values
 
 # Split into training and testing datasets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -35,11 +36,11 @@ X_test = scaler.transform(X_test)
 # Save the scaler for future use in inference
 joblib.dump(scaler, 'scaler.pkl')
 
-# Define a simple feedforward neural network
-class RainPredictionModel(nn.Module):
+# Define a simple feedforward neural network for indoor/outdoor prediction
+class IndoorOutdoorModel(nn.Module):
     def __init__(self):
-        super(RainPredictionModel, self).__init__()
-        self.fc1 = nn.Linear(3, 16)
+        super(IndoorOutdoorModel, self).__init__()
+        self.fc1 = nn.Linear(2, 16)
         self.fc2 = nn.Linear(16, 8)
         self.fc3 = nn.Linear(8, 1)
         self.sigmoid = nn.Sigmoid()
@@ -51,7 +52,7 @@ class RainPredictionModel(nn.Module):
         return x
 
 # Initialize the model, loss function, and optimizer
-model = RainPredictionModel()
+model = IndoorOutdoorModel()
 criterion = nn.BCELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -73,5 +74,5 @@ for epoch in range(epochs):
         print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
 
 # Save the trained model
-torch.save(model.state_dict(), 'rain_prediction_model.pkl')
+torch.save(model.state_dict(), 'indoor_outdoor_model.pkl')
 print("Model trained and saved successfully.")
